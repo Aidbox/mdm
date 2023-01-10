@@ -4,6 +4,10 @@ version = "0.1.0"
 description = ""
 authors = ["Health Samurai <hello@health-samurai.io>"]
 readme = "README.md"
+packages = [
+  { include = "aidbox" },
+  { include = "splink" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
