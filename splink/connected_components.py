@@ -250,7 +250,7 @@ def _cc_generate_representatives_loop_cond(
 
         from {prev_representatives}
 
-    )
+    ) t(node_id, representative)
     group by node_id
         """
 

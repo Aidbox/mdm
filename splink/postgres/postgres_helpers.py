@@ -2,6 +2,7 @@ import uuid
 import os
 import tempfile
 from pathlib import Path
+import edn_format as edn
 
 
 def validate_postgres_connection(connection, logger):
@@ -157,13 +158,47 @@ def format_comparisons(comparisons):
         'comparisons': comparisons_dict
     }
 
+def keywordize(data):
+    if isinstance(data, list):
+        return [keywordize(datum) for datum in data]
+    if isinstance(data, dict):
+        return {edn.Keyword(key) if isinstance(key, str) else key: keywordize(value) for key, value in data.items()}
+    return data
 
-def generate_zen_model(model):
-    comparison_data = format_comparisons(model['comparisons'])
+def keywordize_field(data):
+    if not isinstance(data, list):
+        return data
+    result = []
+    for datum in data:
+        if isinstance(datum, str):
+            result.append(edn.Keyword(datum))
+        elif isinstance(datum, dict):
+            result.append(keywordize(datum))
+        else:
+            result.append(datum)
+    return result
+
+def keywordize_fields(data):
+    if not isinstance(data, dict):
+        return data
+    result = {}
+    for key, value in data.items():
+        result[edn.Keyword(key)] = keywordize_field(value)
+    return result
+
+def format_mdm_model(model):
+    return {
+        edn.Keyword('resource-type'): model['resource-type'],
+        edn.Keyword('use-frequencies-for'): set(model['use-frequencies-for']),
+        edn.Keyword('field'): keywordize_fields(model['fields'])
+    }
+
+def generate_zen_model(mdm_model, splink_model):
+    comparison_data = format_comparisons(splink_model['comparisons'])
     comparisons = comparison_data['comparisons']
     use_frequencies_for = {edn.Keyword(x) for x in comparison_data['use_frequencies_for']}
-    random_match_probability = model['probability_two_random_records_match']
-    blocking_conds = model['blocking_rules_to_generate_predictions']
+    random_match_probability = splink_model['probability_two_random_records_match']
+    blocking_conds = splink_model['blocking_rules_to_generate_predictions']
     
     zen_model_dict = {
         edn.Keyword('comparisons'): comparisons,
@@ -172,4 +207,6 @@ def generate_zen_model(model):
     }
     if use_frequencies_for:
         zen_model_dict[edn.Keyword('use-frequencies-for')] = use_frequencies_for
-    return zen_model_dict
+
+    mdm_model_edn = format_mdm_model(mdm_model.as_dict())
+    return mdm_model_edn | zen_model_dict

@@ -102,6 +102,7 @@ class PostgresLinker(Linker):
         self._sql_dialect_ = "postgres"
 
         self.box = box
+        self.mdm_model = model
 
         self.box.sql("""
         CREATE OR REPLACE FUNCTION
@@ -204,10 +205,11 @@ class PostgresLinker(Linker):
         self.box.sql(drop_sql)
     
     def save_zen_model_edn(self, filename):
-        with open(filename, w) as f:
-            model = self._settings_obj.as_dict()
-            zen_model = generate_zen_model(model)
-            edn_string = edn.dumps(f)
+        with open(filename, 'w') as f:
+            mdm_model = self.mdm_model
+            splink_model = self._settings_obj.as_dict()
+            zen_model = generate_zen_model(mdm_model, splink_model)
+            edn_string = edn.dumps(zen_model)
             f.write(edn_string)
 
     def drop_splink_tables(self):
@@ -220,6 +222,9 @@ class PostgresLinker(Linker):
 
         response = self.box.sql(splink_tables_sql)
         splink_tables = [row['tablename'] for row in response]
+
+        if not splink_tables:
+            return
 
         table_sql_list = ', '.join([f'"{table}"' for table in splink_tables])
         drop_sql = f"DROP TABLE IF EXISTS {table_sql_list}"

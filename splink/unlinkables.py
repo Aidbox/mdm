@@ -12,8 +12,8 @@ def unlinkables_data(linker):
 
     sql = f"""
         select
-        round(match_weight, 2) as match_weight,
-        round(match_probability, 5) as match_probability
+        round(match_weight::numeric, 2) as match_weight,
+        round(match_probability::numeric, 5) as match_probability
         from {self_link.physical_name}
     """
 
