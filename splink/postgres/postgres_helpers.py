@@ -194,7 +194,7 @@ def format_mdm_model(model):
     return {
         edn.Keyword('resource-type'): model['resource-type'],
         edn.Keyword('use-frequencies-for'): set(model['use-frequencies-for']),
-        edn.Keyword('field'): keywordize_fields(model['fields'])
+        edn.Keyword('fields'): keywordize_fields(model['fields'])
     }
 
 def generate_zen_model(mdm_model, splink_model):
