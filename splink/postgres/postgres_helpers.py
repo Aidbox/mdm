@@ -205,7 +205,7 @@ def generate_zen_model(mdm_model, splink_model):
     blocking_conds = splink_model['blocking_rules_to_generate_predictions']
     
     zen_model_dict = {
-        edn.Keyword('zen/tags'): {edn.Keyword('aidbox.mdm/model')}
+        edn.Keyword('zen/tags'): {edn.Keyword('aidbox.mdm/model')},
         edn.Keyword('comparisons'): comparisons,
         edn.Keyword('random-match-prob'): random_match_probability,
         edn.Keyword('blocking-conds'): blocking_conds
