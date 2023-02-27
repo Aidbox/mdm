@@ -96,7 +96,11 @@ def format_comparison_level(level):
 def format_comparison_null(level):
     return {
         'use_frequencies': False,
-        'levels': {edn.Keyword('cond'): level['sql_condition']}
+        'levels': {
+            edn.Keyword('cond'): level['sql_condition'],
+            edn.Keyword('m-prob'): 1.0,
+            edn.Keyword('u-prob'): 1.0
+        }
     }
 
 
