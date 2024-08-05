@@ -11,7 +11,7 @@ Then run
 ```sh
 poetry install
 poetry shell
-python -m ipykernel install --user --name aidobx --display-name Aidbox
+python -m ipykernel install --user --name aidbox --display-name Aidbox
 ```
 
 ## Usage
